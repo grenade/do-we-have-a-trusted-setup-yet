@@ -1,15 +1,15 @@
 {
   "files": {
-    "main.css": "/static/css/main.eab37897.css",
-    "main.js": "/static/js/main.23ac317a.js",
-    "static/js/787.b5ae8853.chunk.js": "/static/js/787.b5ae8853.chunk.js",
-    "index.html": "/index.html",
-    "main.eab37897.css.map": "/static/css/main.eab37897.css.map",
-    "main.23ac317a.js.map": "/static/js/main.23ac317a.js.map",
-    "787.b5ae8853.chunk.js.map": "/static/js/787.b5ae8853.chunk.js.map"
+    "main.css": "/do-we-have-a-trusted-setup-yet/static/css/main.eab37897.css",
+    "main.js": "/do-we-have-a-trusted-setup-yet/static/js/main.89c28b4f.js",
+    "static/js/787.b5ae8853.chunk.js": "/do-we-have-a-trusted-setup-yet/static/js/787.b5ae8853.chunk.js",
+    "index.html": "/do-we-have-a-trusted-setup-yet/index.html",
+    "main.eab37897.css.map": "/do-we-have-a-trusted-setup-yet/static/css/main.eab37897.css.map",
+    "main.89c28b4f.js.map": "/do-we-have-a-trusted-setup-yet/static/js/main.89c28b4f.js.map",
+    "787.b5ae8853.chunk.js.map": "/do-we-have-a-trusted-setup-yet/static/js/787.b5ae8853.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.eab37897.css",
-    "static/js/main.23ac317a.js"
+    "static/js/main.89c28b4f.js"
   ]
 }
