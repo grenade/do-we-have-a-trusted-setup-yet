@@ -4,7 +4,6 @@ import Form from 'react-bootstrap/Form';
 import Spinner from 'react-bootstrap/Spinner';
 import Countdown from 'react-countdown';
 import md5 from 'md5';
-//import asdf from '@types/md5';
 
 const contributionsPerHour = (contributionCount) => {
   const elapsedHours = (Math.abs((new Date()).getTime() - (new Date('2022-11-28 16:55:26.798Z')).getTime()) / 36e5);
@@ -47,13 +46,23 @@ function App() {
   });
   useEffect(() => {
     if (!!visitor && !!visitor.handle && !!queue && !!contributions) {
-      const position = queue.findIndex(({ participant }) => participant === visitor.handle);
-      const slot = new Date((new Date()).getTime() + (position / contributionsPerHour(contributions.length) * 36e5));
-      setVisitor((v) => ({ ...v, position, slot }));
+      const isQueued = queue.some(({ participant }) => participant === visitor.handle);
+      const hasContributed = contributions.some(({ participant }) => participant === visitor.handle);
+      if (hasContributed) {
+        setVisitor({ handle: visitor.handle, contribution: contributions.find(({ participant }) => participant === visitor.handle) });
+      } else if (isQueued) {
+        const position = queue.findIndex(({ participant }) => participant === visitor.handle);
+        const slot = new Date((new Date()).getTime() + (position / contributionsPerHour(contributions.length) * 36e5));
+        setVisitor({ handle: visitor.handle, position, slot });
+      } else {
+        setVisitor({ handle: visitor.handle });
+      }
     }
   }, [visitor, queue, contributions]);
   const queueLookup = (handle) => {
-    setVisitor(((handle.length >= 4) && !!queue && queue.some(({ participant }) => participant === handle)) ? { handle } : false);
+    const isQueued = (handle.length >= 4) && !!queue && queue.some(({ participant }) => participant === handle);
+    const hasContributed = (handle.length >= 4) && !!contributions && contributions.some(({ participant }) => participant === handle);
+    setVisitor((isQueued || hasContributed) ? { handle } : false);
   };
   return (
     <Container>
@@ -190,34 +199,46 @@ function App() {
         <Form.Control type="text" placeholder="twitter handle" onChange={(e) => queueLookup(e.target.value)} />
       </Form.Group>
       {
-        (!!queue && !!visitor && !!visitor.handle && !!visitor.position && !!visitor.slot)
+        (!!queue && !!visitor && !!visitor.handle)
           ? (
-              <div>
-                <p>you are in queue position <strong style={{color: '#d63384'}}>{visitor.position}</strong>.</p>
-                <p>
-                  your contribution slot is likely to occur in <Countdown date={visitor.slot} renderer={
-                  ({ days, hours, minutes, seconds, completed }) => (
-                    (!!completed)
-                      ? (
-                          <span>you are good to go!</span>
-                        )
-                      : (
-                          <strong style={{color: '#d63384'}}>
-                            {(!!days) ? (<span>{days} days, </span>) : null}
-                            {(!!hours) ? (<span>{hours} hours, </span>) : null}
-                            {(!!minutes) ? (<span>{minutes} minutes, </span>) : null}
-                            {(!!seconds) ? (<span>{seconds} seconds</span>) : null}
-                          </strong>
-                        )
+              (!!visitor.contribution)
+                ? (
+                    <div>
+                      <p>your most excellent contribution was number <strong style={{color: '#d63384'}}>{visitor.contribution.number}</strong>, with hash <strong style={{color: '#d63384'}}>{visitor.contribution.hash}</strong>!</p>
+                    </div>
                   )
-                } />, on <strong style={{color: '#d63384'}}>{new Intl.DateTimeFormat('default', { dateStyle: 'full', timeStyle: 'long' }).format(visitor.slot).toLowerCase()}</strong>
-                </p>
-                <p>
-                  note that your queue position can change depending on multiple factors (like others stepping out of the queue or otherwise missing their slot).
-                  this page can only provide guesswork.
-                  you should rely only on the messages you see in your trusted setup client.
-                </p>
-              </div>
+                : (
+                    (!!visitor.position && !!visitor.slot)
+                      ? (
+                          <div>
+                            <p>you are in queue position <strong style={{color: '#d63384'}}>{visitor.position}</strong>.</p>
+                            <p>
+                              your contribution slot is likely to occur in <Countdown date={visitor.slot} renderer={
+                              ({ days, hours, minutes, seconds, completed }) => (
+                                (!!completed)
+                                  ? (
+                                      <span>you are good to go!</span>
+                                    )
+                                  : (
+                                      <strong style={{color: '#d63384'}}>
+                                        {(!!days) ? (<span>{days} days, </span>) : null}
+                                        {(!!hours) ? (<span>{hours} hours, </span>) : null}
+                                        {(!!minutes) ? (<span>{minutes} minutes, </span>) : null}
+                                        {(!!seconds) ? (<span>{seconds} seconds</span>) : null}
+                                      </strong>
+                                    )
+                              )
+                            } />, on <strong style={{color: '#d63384'}}>{new Intl.DateTimeFormat('default', { dateStyle: 'full', timeStyle: 'long' }).format(visitor.slot).toLowerCase()}</strong>
+                            </p>
+                            <p>
+                              note that your queue position can change depending on multiple factors (like others stepping out of the queue or otherwise missing their slot).
+                              this page can only provide guesswork.
+                              you should rely only on the messages you see in your trusted setup client.
+                            </p>
+                          </div>
+                        )
+                      : null
+                  )
             )
           : null
       }
