@@ -58,7 +58,7 @@ function App() {
         setVisitor({ handle: visitor.handle });
       }
     }
-  }, [visitor, queue, contributions]);
+  }, [visitor.handle, queue, contributions]);
   const queueLookup = (handle) => {
     const isQueued = (handle.length >= 4) && !!queue && queue.some(({ participant }) => participant === handle);
     const hasContributed = (handle.length >= 4) && !!contributions && contributions.some(({ participant }) => participant === handle);
@@ -204,7 +204,15 @@ function App() {
               (!!visitor.contribution)
                 ? (
                     <div>
-                      <p>your most excellent contribution was number <strong style={{color: '#d63384'}}>{visitor.contribution.number}</strong>, with hash <strong style={{color: '#d63384'}}>{visitor.contribution.hash}</strong>!</p>
+                      <p>
+                        your most excellent contribution on <strong style={{color: '#d63384'}}>{
+                          new Intl.DateTimeFormat('default', { dateStyle: 'full', timeStyle: 'long' }).format(new Date(visitor.contribution.timestamp)).toLowerCase()
+                        }</strong> was number <strong style={{color: '#d63384'}}>{
+                          visitor.contribution.number
+                        }</strong>, with hash <strong style={{color: '#d63384'}}>{
+                          visitor.contribution.hash
+                        }</strong>!
+                      </p>
                     </div>
                   )
                 : (
