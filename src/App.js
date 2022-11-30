@@ -212,6 +212,11 @@ function App() {
                   )
                 } />, on <strong style={{color: '#d63384'}}>{new Intl.DateTimeFormat('default', { dateStyle: 'full', timeStyle: 'long' }).format(visitor.slot).toLowerCase()}</strong>
                 </p>
+                <p>
+                  note that your queue position can change depending on multiple factors (like others stepping out of the queue or otherwise missing their slot).
+                  this page can only provide guesswork.
+                  you should rely only on the messages you see in your trusted setup client.
+                </p>
               </div>
             )
           : null
