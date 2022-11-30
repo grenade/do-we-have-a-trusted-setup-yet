@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import Container from 'react-bootstrap/Container';
+import Form from 'react-bootstrap/Form';
 import Spinner from 'react-bootstrap/Spinner';
 import Countdown from 'react-countdown';
 import md5 from 'md5';
@@ -16,6 +17,7 @@ const completionTime = (contributionCount, queueCount) => {
 };
 
 function App() {
+  const [visitor, setVisitor] = useState(false);
   const [wen, setWen] = useState(false);
   const [contributions, setContributions] = useState(false);
   const [queue, setQueue] = useState(false);
@@ -43,6 +45,16 @@ function App() {
     }, (3000));
     return () => clearInterval(interval);
   });
+  useEffect(() => {
+    if (!!visitor && !!visitor.handle && !!queue && !!contributions) {
+      const position = queue.findIndex(({ participant }) => participant === visitor.handle);
+      const slot = new Date((new Date()).getTime() + (position / contributionsPerHour(contributions.length) * 36e5));
+      setVisitor((v) => ({ ...v, position, slot }));
+    }
+  }, [visitor, queue, contributions]);
+  const queueLookup = (handle) => {
+    setVisitor(((handle.length >= 4) && !!queue && queue.some(({ participant }) => participant === handle)) ? { handle } : false);
+  };
   return (
     <Container>
       <h1>wen trusted setup?</h1>
@@ -172,6 +184,38 @@ function App() {
       <p>
         learn more about <a href="https://docs.manta.network/docs/guides/TrustedSetup" style={{textDecoration: 'none'}}>how to take part</a>.
       </p>
+      <h2>wen my turn?</h2>
+      <Form.Group className="mb-3">
+        <Form.Label>enter your twitter handle to see when your contribution slot is likely to occur:</Form.Label>
+        <Form.Control type="text" placeholder="twitter handle" onChange={(e) => queueLookup(e.target.value)} />
+      </Form.Group>
+      {
+        (!!queue && !!visitor && !!visitor.handle && !!visitor.position && !!visitor.slot)
+          ? (
+              <div>
+                <p>you are in queue position <strong style={{color: '#d63384'}}>{visitor.position}</strong>.</p>
+                <p>
+                  your contribution slot is likely to occur in <Countdown date={visitor.slot} renderer={
+                  ({ days, hours, minutes, seconds, completed }) => (
+                    (!!completed)
+                      ? (
+                          <span>you are good to go!</span>
+                        )
+                      : (
+                          <strong style={{color: '#d63384'}}>
+                            {(!!days) ? (<span>{days} days, </span>) : null}
+                            {(!!hours) ? (<span>{hours} hours, </span>) : null}
+                            {(!!minutes) ? (<span>{minutes} minutes, </span>) : null}
+                            {(!!seconds) ? (<span>{seconds} seconds</span>) : null}
+                          </strong>
+                        )
+                  )
+                } />, on <strong style={{color: '#d63384'}}>{new Intl.DateTimeFormat('default', { dateStyle: 'full', timeStyle: 'long' }).format(visitor.slot).toLowerCase()}</strong>
+                </p>
+              </div>
+            )
+          : null
+      }
     </Container>
   );
 }
