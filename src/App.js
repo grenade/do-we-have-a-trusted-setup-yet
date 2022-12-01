@@ -193,6 +193,9 @@ function App() {
       <p>
         learn more about <a href="https://docs.manta.network/docs/guides/TrustedSetup" style={{textDecoration: 'none'}}>how to take part</a>.
       </p>
+      <p>
+        learn more about <a href="https://docs.manta.network/docs/concepts/TrustedSetup" style={{textDecoration: 'none'}}>what's going on here</a>.
+      </p>
       <h2>wen my turn?</h2>
       <Form.Group className="mb-3">
         <Form.Label>enter your twitter handle to see when your contribution slot is likely to occur:</Form.Label>
