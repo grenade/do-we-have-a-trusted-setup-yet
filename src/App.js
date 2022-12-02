@@ -83,7 +83,7 @@ function App() {
         },
       });
     }
-  }, [queue, contributions]);
+  }, [contributions]);
 
 
   useEffect(() => {
