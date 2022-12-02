@@ -149,29 +149,27 @@ function App() {
               )
         }
       </h2>
-      <h3>
-        at the current rate of contribution validations, all queued participants will have their contributions validated in {
-          (!!wen)
-            ? (
-                <Countdown date={wen} renderer={
-                  ({ days, hours, minutes, seconds, completed }) => (
-                    (!!completed)
-                      ? (
-                          <span>You are good to go!</span>
-                        )
-                      : (
-                          <strong style={{color: '#d63384'}}>{days} days, {hours} hours, {minutes} minutes, {seconds} seconds</strong>
-                        )
-                  )
-                } />
-              )
-            : (
-                <Spinner size="sm" animation="border" variant="dark">
-                  <span className="visually-hidden">wen trusted setup calculation in progress...</span>
-                </Spinner>
-              )
-        }. 
-      </h3>
+      {
+        (!!wen)
+          ? (
+              <Countdown date={wen} renderer={
+                ({ days, hours, minutes, seconds, completed }) => (
+                  (!!completed)
+                    ? null
+                    : (
+                        <h3>
+                          at the current rate of contribution validations, all queued participants will have their contributions validated in <strong style={{color: '#d63384'}}>{days} days, {hours} hours, {minutes} minutes, {seconds} seconds</strong>
+                        </h3>
+                      )
+                )
+              } />
+            )
+          : (
+              <Spinner size="sm" animation="border" variant="dark">
+                <span className="visually-hidden">wen trusted setup calculation in progress...</span>
+              </Spinner>
+            )
+      }
       <ul>
         <li>
           <a href="https://ceremony.manta.network" style={{textDecoration: 'none'}}>
