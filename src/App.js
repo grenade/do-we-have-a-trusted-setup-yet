@@ -97,7 +97,9 @@ function App() {
               let lastParticipant;
               let i = 0;
               while (!lastParticipant) {
-                lastParticipant = contributions.slice(-((i+1)))[0].participant;
+                if (queue.some((q) => !!q.position && q.participant === contributions.slice(-((i+1)))[0].participant)) {
+                  lastParticipant = contributions.slice(-((i+1)))[0].participant;
+                }
                 i++;
               }
               const lastParticipantIndex = queue.findIndex(({ participant }) => participant === lastParticipant);
