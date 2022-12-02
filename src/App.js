@@ -4,6 +4,28 @@ import Form from 'react-bootstrap/Form';
 import Spinner from 'react-bootstrap/Spinner';
 import Countdown from 'react-countdown';
 import md5 from 'md5';
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  Filler,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend,
+} from 'chart.js';
+import { Line } from 'react-chartjs-2';
+ChartJS.register(
+  CategoryScale,
+  Filler,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend
+);
 
 const contributionsPerHour = (contributionCount) => {
   const elapsedHours = (Math.abs((new Date()).getTime() - (new Date('2022-11-28 16:55:26.798Z')).getTime()) / 36e5);
@@ -20,6 +42,50 @@ function App() {
   const [wen, setWen] = useState(false);
   const [contributions, setContributions] = useState(false);
   const [queue, setQueue] = useState(false);
+  const [chartArgs, setChartArgs] = useState(false);
+  useEffect(() => {
+    if (contributions) {
+      const hourlyContributions = [...new Set(contributions.map((c) => c.timestamp.slice(0, 13)))].map((hour) => ({
+        hour,
+        count: contributions.filter((c) => c.timestamp.startsWith(hour)).length,
+      })).reduce((a, x, i) => [...a, ...[{
+        hour: new Intl.DateTimeFormat('default', { month: 'short', day: 'numeric', hour: 'numeric' }).format(new Date(`${x.hour}:00:00.000Z`)).toLowerCase(),
+        count: (!!i) ? x.count + a[i-1].count : x.count,
+      }]], []);
+      setChartArgs({
+        options: {
+          plugins: {
+            legend: {
+              display: false,
+            },
+          },
+        },
+        data: {
+          labels: hourlyContributions.map((x) => x.hour),
+          datasets: [
+            {
+              label: 'contributions',
+              data: hourlyContributions.map((x) => x.count),
+              fill: true,
+              backgroundColor: 'rgba(214, 51, 132, 0.2)',
+              borderColor: '#d63384',
+              borderWidth: 2,
+              lineTension: 0.75,
+              pointBackgroundColor: '#d63384',
+              pointBorderColor: '#ffffff',
+              pointHoverBackgroundColor: '#d63384',
+              pointBorderWidth: 1,
+              pointHoverRadius: 4,
+              pointHoverBorderWidth: 15,
+              pointRadius: 3,
+            }
+          ],
+        },
+      });
+    }
+  }, [queue, contributions]);
+
+
   useEffect(() => {
     const interval = setInterval(() => {
       fetch(`https://gist.githubusercontent.com/grenade/1b874c13d611f298007b95c96d47c13f/raw/contribution.json`)
@@ -45,7 +111,7 @@ function App() {
     return () => clearInterval(interval);
   });
   useEffect(() => {
-    if (!!visitor && !!visitor.handle && !!queue && !!contributions) {
+    if (!!visitor.handle && !!queue && !!contributions) {
       const isQueued = queue.some(({ participant }) => participant === visitor.handle);
       const hasContributed = contributions.some(({ participant }) => participant === visitor.handle);
       if (hasContributed) {
@@ -66,6 +132,7 @@ function App() {
   };
   return (
     <Container>
+      {(!!chartArgs) ? <Line {...chartArgs} /> : null}
       <h1>wen trusted setup?</h1>
       <h2 style={{color: '#d63384'}}>
         {
