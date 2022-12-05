@@ -160,7 +160,9 @@ function App() {
                     ? null
                     : (
                         <h3>
-                          at the current rate of contribution validations, all queued participants will have their contributions validated in <strong style={{color: '#d63384'}}>{days} days, {hours} hours, {minutes} minutes, {seconds} seconds</strong>
+                          at the current rate of contribution validations at <a href="https://ceremony.manta.network" style={{textDecoration: 'none'}}>
+                            ceremony.manta.network
+                          </a>, all queued participants will have their contributions validated in <strong style={{color: '#d63384'}}>{days} days, {hours} hours, {minutes} minutes, {seconds} seconds</strong>
                         </h3>
                       )
                 )
@@ -173,23 +175,6 @@ function App() {
             )
       }
       <ul>
-        <li>
-          <a href="https://ceremony.manta.network" style={{textDecoration: 'none'}}>
-            ceremony.manta.network
-          </a> is currently processing {
-            (!!contributions)
-              ? (
-                  <strong>
-                    {contributionsPerHour(contributions.length).toFixed(1)}
-                  </strong>
-                )
-              : (
-                  <Spinner size="sm" animation="border" variant="dark">
-                    <span className="visually-hidden">contribution lookup in progress...</span>
-                  </Spinner>
-                )
-          } contributions, on average, per hour.
-        </li>
         <li>
           there are {
             (!!queue)
