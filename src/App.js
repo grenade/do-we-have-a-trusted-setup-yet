@@ -94,16 +94,17 @@ function App() {
           fetch(`https://gist.githubusercontent.com/grenade/1b874c13d611f298007b95c96d47c13f/raw/queue.json`)
             .then(response => response.json())
             .then((queue) => {
+              const likelyQueue = queue.slice(contributions.length);
               let lastParticipant;
               let i = 0;
               while (!lastParticipant) {
-                if (queue.some((q) => !!q.position && q.participant === contributions.slice(-((i+1)))[0].participant)) {
+                if (likelyQueue.some((q) => !!q.position && q.participant === contributions.slice(-((i+1)))[0].participant)) {
                   lastParticipant = contributions.slice(-((i+1)))[0].participant;
                 }
                 i++;
               }
-              const lastParticipantIndex = queue.findIndex(({ participant }) => participant === lastParticipant);
-              const actualQueue = queue.slice(lastParticipantIndex + (i+1));
+              const lastParticipantIndex = likelyQueue.findIndex(({ participant }) => participant === lastParticipant);
+              const actualQueue = likelyQueue.slice(lastParticipantIndex + (i+1));
               setWen(completionTime(contributions.length, actualQueue.length));
               setQueue(actualQueue);
             });
